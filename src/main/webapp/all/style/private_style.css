@@ -1,0 +1,53 @@
+html {
+    background-color: white;
+    margin:0 auto;
+}
+body {
+    padding: 5px;
+}
+
+.navbar {
+    background-color: #f5f5f0;
+}
+.navbar-nav {
+    color: blue !important;
+    font-weight: lighter;
+}
+table {
+    border: 1px solid lightgray;
+}
+
+table, tr, th, td {
+    font-size: 12px;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+    background: lightgrey;
+    padding: 4px;
+    border: 1px solid lightgrey;
+    border-radius: 3px;
+}
+
+button .btn {
+    background: lightgrey;
+    padding: 2px;
+    border: 1px solid lightgrey;
+    border-radius: 2px;
+    font-size: 0.7em;
+}
+
+.msg-info {
+    color: red !important;
+    font-weight: lighter;
+    font-size: 1em;
+}
+
+.msg-invalid {
+    color: red !important;
+    font-size: 0.7em;
+    font-style: italic;
+}
