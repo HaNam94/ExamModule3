@@ -1,11 +1,14 @@
 package org.example.baithimodule3.product_bo;
 
-import jdk.jfr.Category;
+
+
+import org.example.baithimodule3.model.Category;
+import org.example.baithimodule3.model.Product;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class ProductBO {
+public interface ProductBO {
     public void create(Product el) throws SQLException;
 
     public Product findById(String id);
@@ -18,5 +21,6 @@ public class ProductBO {
 
     List<Product> findByName(String str);
 
+    // list 2
     List<Category> findAllCateGory();
 }

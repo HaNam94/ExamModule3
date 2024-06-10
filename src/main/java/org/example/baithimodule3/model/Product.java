@@ -1,6 +1,6 @@
 package org.example.baithimodule3.model;
 
-public class product_model {
+public class Product {
     private String productId;  //id
 
     private String  productName;   //a

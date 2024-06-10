@@ -1,6 +1,6 @@
 package org.example.baithimodule3.model;
 
-public class category_model {
+public class Category {
     private String categoryId;
     private String categoryName;
 

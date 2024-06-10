@@ -2,13 +2,18 @@ package org.example.baithimodule3.product_dao;
 
 
 import org.example.baithimodule3.common.DBConnection;
+import org.example.baithimodule3.model.Category;
+import org.example.baithimodule3.model.Product;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-public interface ProductDAOImplement implements ProductDAO{
+public class ProductDAOImplement implements ProductDAO {
+
     /* ....................... Table and Column ......................*/
     private static final String TABLE_NAME = " `product` ";
 
@@ -69,139 +74,204 @@ public interface ProductDAOImplement implements ProductDAO{
                 statement.setString(3, el.getProductPrice());
                 statement.setString(4, el.getProductQuantity());
                 statement.setString(5, el.getProductColor());
+                statement.setString(6, el.getProductDescription());
+                statement.setString(7, el.getProductCategory());
 
-                @Override
-                public List<Product> findAll() {
-                    Connection connection = DBConnection.getConnection();
-                    PreparedStatement statement = null;
-                    ResultSet resultSet = null;
-                    List<Product> eList = new ArrayList<>();
-                    Product el = null;
 
-                    if(connection != null) {
-                        try {
-                            statement = connection.prepareStatement(SELECT_ALL);
-                            resultSet = statement.executeQuery();
+                // 3.Execute the query sql using statement
+                statement.executeUpdate();
 
-                            while (resultSet.next()) {
-                                el = new Product();
-                                el.setProductId(String.valueOf(resultSet.getInt(COL_NAME_1)));
-                                el.setProductName(resultSet.getString(COL_NAME_2));
-                                el.setProductPrice(resultSet.getString(COL_NAME_3));
-                                el.setProductQuantity(resultSet.getString(COL_NAME_4));
-                                el.setProductColor(resultSet.getString(COL_NAME_5));
-                                el.setProductDescription(resultSet.getString(COL_NAME_6));
-                                el.setProductCategory(resultSet.getString(COL_NAME_7));
+                // 4.Process the result (if needed)
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            // 5.Close the connection
+            DBConnection.close();
+        }
+    }
 
-                                eList.add(el);
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        } finally {
-                            DBConnection.close();
-                        }
-                    }
-                    return eList;
+    @Override
+    public boolean update(String id, Product el) throws SQLException {
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement statement = null;
+        boolean rowUpdated = false;
+
+        try {
+            if (connection != null) {
+                statement = connection.prepareStatement(UPDATE_SET);
+                statement.setInt(1, Integer.parseInt(el.getProductId()));
+                statement.setString(2, el.getProductName());
+                statement.setString(3, el.getProductPrice());
+                statement.setString(4, el.getProductQuantity());
+                statement.setString(5, el.getProductColor());
+                statement.setString(6, el.getProductDescription());
+                statement.setString(7, el.getProductCategory());
+
+                statement.setInt(8, Integer.parseInt(id));
+
+                rowUpdated = statement.executeUpdate() > 0;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            DBConnection.close();
+        }
+        return rowUpdated;
+    }
+
+
+    @Override
+    public boolean delete(String id) throws SQLException {
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement statement = null;
+        boolean rowAffected = false;
+
+        try {
+            if(connection != null) {
+                statement = connection.prepareStatement(DELETE_FROM);
+                statement.setString(1, id);
+                rowAffected = statement.executeUpdate() > 0;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            DBConnection.close();
+        }
+        return rowAffected;
+    }
+
+
+    @Override
+    public List<Product> findAll() {
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Product> eList = new ArrayList<>();
+        Product el = null;
+
+        if(connection != null) {
+            try {
+                statement = connection.prepareStatement(SELECT_ALL);
+                resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    el = new Product();
+                    el.setProductId(String.valueOf(resultSet.getInt(COL_NAME_1)));
+                    el.setProductName(resultSet.getString(COL_NAME_2));
+                    el.setProductPrice(resultSet.getString(COL_NAME_3));
+                    el.setProductQuantity(resultSet.getString(COL_NAME_4));
+                    el.setProductColor(resultSet.getString(COL_NAME_5));
+                    el.setProductDescription(resultSet.getString(COL_NAME_6));
+                    el.setProductCategory(resultSet.getString(COL_NAME_7));
+
+                    eList.add(el);
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBConnection.close();
+            }
+        }
+        return eList;
+    }
 
 
-                @Override
-                public Product findById(String id) {
-                    Connection connection = DBConnection.getConnection();
-                    PreparedStatement statement = null;
-                    ResultSet resultSet = null;
-                    Product el = null;
+    @Override
+    public Product findById(String id) {
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Product el = null;
 
-                    if(connection != null) {
-                        try {
-                            statement = connection.prepareStatement(SELECT_BY_ID);
-                            statement.setInt(1, Integer.parseInt(id));
-                            resultSet = statement.executeQuery();
+        if(connection != null) {
+            try {
+                statement = connection.prepareStatement(SELECT_BY_ID);
+                statement.setInt(1, Integer.parseInt(id));
+                resultSet = statement.executeQuery();
 
-                            if (resultSet.next()) {
-                                el = new Product();
-                                el.setProductId(String.valueOf(resultSet.getInt(COL_NAME_1)));
-                                el.setProductName(resultSet.getString(COL_NAME_2));
-                                el.setProductPrice(resultSet.getString(COL_NAME_3));
-                                el.setProductQuantity(resultSet.getString(COL_NAME_4));
-                                el.setProductColor(resultSet.getString(COL_NAME_5));
-                                el.setProductDescription(resultSet.getString(COL_NAME_6));
-                                el.setProductCategory(resultSet.getString(COL_NAME_7));
+                if (resultSet.next()) {
+                    el = new Product();
+                    el.setProductId(String.valueOf(resultSet.getInt(COL_NAME_1)));
+                    el.setProductName(resultSet.getString(COL_NAME_2));
+                    el.setProductPrice(resultSet.getString(COL_NAME_3));
+                    el.setProductQuantity(resultSet.getString(COL_NAME_4));
+                    el.setProductColor(resultSet.getString(COL_NAME_5));
+                    el.setProductDescription(resultSet.getString(COL_NAME_6));
+                    el.setProductCategory(resultSet.getString(COL_NAME_7));
 
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        } finally {
-                            DBConnection.close();
-                        }
-                    }
-                    return el;
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBConnection.close();
+            }
+        }
+        return el;
+    }
 
 
-                @Override
-                public List<Product> findByName(String str) {
-                    Connection connection = DBConnection.getConnection();
-                    PreparedStatement statement = null;
-                    ResultSet resultSet = null;
-                    List<Product> eList = new ArrayList<>();
-                    Product el = null;
+    @Override
+    public List<Product> findByName(String str) {
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Product> eList = new ArrayList<>();
+        Product el = null;
 
-                    if (connection != null) {
-                        try {
-                            statement = connection.prepareStatement(SELECT_BY_NAME);
-                            statement.setString(1, "%" + str + "%");
-                            resultSet = statement.executeQuery();
+        if (connection != null) {
+            try {
+                statement = connection.prepareStatement(SELECT_BY_NAME);
+                statement.setString(1, "%" + str + "%");
+                resultSet = statement.executeQuery();
 
-                            while (resultSet.next()) {
-                                el = new Product();
-                                el.setProductId(String.valueOf(resultSet.getInt(COL_NAME_1)));
-                                el.setProductName(resultSet.getString(COL_NAME_2));
-                                el.setProductPrice(resultSet.getString(COL_NAME_3));
-                                el.setProductQuantity(resultSet.getString(COL_NAME_4));
-                                el.setProductColor(resultSet.getString(COL_NAME_5));
-                                el.setProductDescription(resultSet.getString(COL_NAME_6));
-                                el.setProductCategory(resultSet.getString(COL_NAME_7));
+                while (resultSet.next()) {
+                    el = new Product();
+                    el.setProductId(String.valueOf(resultSet.getInt(COL_NAME_1)));
+                    el.setProductName(resultSet.getString(COL_NAME_2));
+                    el.setProductPrice(resultSet.getString(COL_NAME_3));
+                    el.setProductQuantity(resultSet.getString(COL_NAME_4));
+                    el.setProductColor(resultSet.getString(COL_NAME_5));
+                    el.setProductDescription(resultSet.getString(COL_NAME_6));
+                    el.setProductCategory(resultSet.getString(COL_NAME_7));
 
-                                eList.add(el);
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        } finally {
-                            DBConnection.close();
-                        }
-                    }
-                    return eList;
+                    eList.add(el);
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBConnection.close();
+            }
+        }
+        return eList;
+    }
 
-                @Override
-                public List<Category> findAllCateGory() {
-                    Connection connection = DBConnection.getConnection();
-                    PreparedStatement statement = null;
-                    ResultSet resultSet = null;
-                    List<Category> eList2 = new ArrayList<>();
-                    Category el = null;
-                    String findAllCategory = "select * from `category`";
+    @Override
+    public List<Category> findAllCateGory() {
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Category> eList2 = new ArrayList<>();
+        Category el = null;
+        String findAllCategory = "select * from `category`";
 
-                    if(connection != null) {
-                        try {
-                            statement = connection.prepareStatement(findAllCategory);
-                            resultSet = statement.executeQuery();
+        if(connection != null) {
+            try {
+                statement = connection.prepareStatement(findAllCategory);
+                resultSet = statement.executeQuery();
 
-                            while (resultSet.next()) {
-                                el = new Category();
-                                el.setCategoryId((resultSet.getString("category_id")));
-                                el.setCategoryName(resultSet.getString("category_name"));
-                                eList2.add(el);
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        } finally {
-                            DBConnection.close();
-                        }
-                    }
-                    return eList2;
+                while (resultSet.next()) {
+                    el = new Category();
+                    el.setCategoryId((resultSet.getString("category_id")));
+                    el.setCategoryName(resultSet.getString("category_name"));
+                    eList2.add(el);
                 }
-
-                List<Category> findAllCateGory();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBConnection.close();
+            }
+        }
+        return eList2;
+    }
 }
